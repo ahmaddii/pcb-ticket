@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'core/router/app_router.dart';
+import 'core/router/route_names.dart';
 import 'core/theme/app_theme.dart';
-import 'features/splash/presentation/splash_screen.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -12,7 +13,8 @@ class App extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      home: const SplashScreen(),
+      initialRoute: RouteNames.splash,
+      onGenerateRoute: AppRouter.onGenerateRoute,
     );
   }
 }

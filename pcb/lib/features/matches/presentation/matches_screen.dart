@@ -5,9 +5,21 @@ class MatchesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text('Matches Screen'),
+    return Scaffold(
+      backgroundColor: const Color(0xFF03140F),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF03140F),
+        elevation: 0,
+        title: const Text(
+          'All Fixtures & Matches',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+      ),
+      body: const Center(
+        child: Text(
+          'Tournament fixtures and series matches will be listed here.',
+          style: TextStyle(color: Colors.white70),
+        ),
       ),
     );
   }

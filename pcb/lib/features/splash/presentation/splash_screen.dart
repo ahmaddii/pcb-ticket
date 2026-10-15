@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_assets.dart';
+import '../../../../core/router/route_names.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -13,13 +15,15 @@ class _SplashScreenState extends State<SplashScreen>
   late final AnimationController _controller;
   late final Animation<double> _fadeAnimation;
   late final Animation<Offset> _slideAnimation;
+  Timer? _navigationTimer;
+  bool _navigated = false;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1400),
+      duration: const Duration(milliseconds: 1200),
     );
 
     _fadeAnimation = CurvedAnimation(
@@ -28,7 +32,7 @@ class _SplashScreenState extends State<SplashScreen>
     );
 
     _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.08),
+      begin: const Offset(0, 0.06),
       end: Offset.zero,
     ).animate(CurvedAnimation(
       parent: _controller,
@@ -36,10 +40,22 @@ class _SplashScreenState extends State<SplashScreen>
     ));
 
     _controller.forward();
+
+    // Transition to Onboarding after 2.6 seconds
+    _navigationTimer = Timer(const Duration(milliseconds: 2600), _goToOnboarding);
+  }
+
+  void _goToOnboarding() {
+    if (!mounted || _navigated) return;
+    _navigated = true;
+    _navigationTimer?.cancel();
+
+    Navigator.of(context).pushReplacementNamed(RouteNames.onboarding);
   }
 
   @override
   void dispose() {
+    _navigationTimer?.cancel();
     _controller.dispose();
     super.dispose();
   }
@@ -48,183 +64,144 @@ class _SplashScreenState extends State<SplashScreen>
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
-    return Scaffold(
-      backgroundColor: const Color(0xFF041913),
-      body: Stack(
-        children: [
-          // 1. Dark emerald gradient backdrop
-          Positioned.fill(
-            child: Container(
-              decoration: const BoxDecoration(
+    return GestureDetector(
+      onTap: _goToOnboarding, // Tap anywhere to skip immediately
+      child: Scaffold(
+        backgroundColor: const Color(0xFF020E0A),
+        body: Stack(
+          fit: StackFit.expand,
+          children: [
+            // 1. Full-screen Stadium Background
+            Image.asset(
+              AppAssets.stadiumSplash,
+              fit: BoxFit.cover,
+              alignment: Alignment.center,
+              errorBuilder: (context, error, stackTrace) {
+                return Container(color: const Color(0xFF020E0A));
+              },
+            ),
+
+            // 2. Seamless dark gradient overlay (smooth dark atmospheric tone)
+            Container(
+              decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
+                  stops: const [0.0, 0.38, 0.72, 1.0],
                   colors: [
-                    Color(0xFF051D16),
-                    Color(0xFF07271E),
-                    Color(0xFF03140F),
+                    const Color(0xFF020E0A),
+                    const Color(0xFF031610).withValues(alpha: 0.92),
+                    const Color(0xFF031610).withValues(alpha: 0.45),
+                    const Color(0xFF010806).withValues(alpha: 0.88),
                   ],
                 ),
               ),
             ),
-          ),
 
-          // 2. Stadium background at the bottom with smooth fading gradient
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            height: size.height * 0.52,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                Image.asset(
-                  AppAssets.stadiumSplash,
-                  fit: BoxFit.cover,
-                  alignment: Alignment.bottomCenter,
-                  errorBuilder: (context, error, stackTrace) {
-                    return const SizedBox.shrink();
-                  },
-                ),
-                // Seamless top gradient blend
-                Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      stops: const [0.0, 0.35, 0.75, 1.0],
-                      colors: [
-                        const Color(0xFF041913),
-                        const Color(0xFF041913).withValues(alpha: 0.7),
-                        Colors.transparent,
-                        Colors.black.withValues(alpha: 0.45),
+            // 3. Center Content: Star Logo, Framed PCB with lines, and Motto (clean, no glow)
+            SafeArea(
+              child: FadeTransition(
+                opacity: _fadeAnimation,
+                child: SlideTransition(
+                  position: _slideAnimation,
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: double.infinity,
+                    child: Column(
+                      children: [
+                        SizedBox(height: size.height * 0.10),
+
+                        // Golden Star PCB Calligraphy Logo
+                        Image.asset(
+                          AppAssets.splashLogo,
+                          width: 130,
+                          height: 130,
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Icon(
+                              Icons.star,
+                              size: 100,
+                              color: Color(0xFFC5A358),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 14),
+
+                        // Upper framing horizontal line
+                        Container(
+                          width: 120,
+                          height: 1.4,
+                          color: const Color(0xFF7A9688).withValues(alpha: 0.85),
+                        ),
+                        const SizedBox(height: 6),
+
+                        // PCB Header - Crisp, clean, no blur or glow
+                        const Text(
+                          'PCB',
+                          style: TextStyle(
+                            fontFamily: 'serif',
+                            fontSize: 48,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 4.5,
+                            color: Colors.white,
+                            height: 1.05,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+
+                        // Lower framing horizontal line
+                        Container(
+                          width: 120,
+                          height: 1.4,
+                          color: const Color(0xFF7A9688).withValues(alpha: 0.85),
+                        ),
+                        const SizedBox(height: 8),
+
+                        // Subtitle: Pakistan Cricket Board - Crisp, no blur or glow
+                        Text(
+                          'Pakistan Cricket Board',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w400,
+                            letterSpacing: 1.5,
+                            color: Colors.white.withValues(alpha: 0.94),
+                          ),
+                        ),
+                        const SizedBox(height: 42),
+
+                        // Tagline: "Cricket for Everyone" - Crisp, no blur or glow
+                        RichText(
+                          text: const TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'Cricket ',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 0.4,
+                                  color: Color(0xFF34D399),
+                                ),
+                              ),
+                              TextSpan(
+                                text: 'for Everyone',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w500,
+                                  letterSpacing: 0.4,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),
                 ),
-              ],
-            ),
-          ),
-
-          // 3. Center/Top Content: Logo, PCB text, Lines, and Tagline
-          SafeArea(
-            child: FadeTransition(
-              opacity: _fadeAnimation,
-              child: SlideTransition(
-                position: _slideAnimation,
-                child: SizedBox(
-                  width: double.infinity,
-                  height: double.infinity,
-                  child: Column(
-                    children: [
-                      SizedBox(height: size.height * 0.08),
-
-                      // Golden Star PCB Calligraphy Logo
-                      Image.asset(
-                        AppAssets.splashLogo,
-                        width: 120,
-                        height: 120,
-                        fit: BoxFit.contain,
-                        errorBuilder: (context, error, stackTrace) {
-                          return const Icon(
-                            Icons.star,
-                            size: 90,
-                            color: Color(0xFFC5A358),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 14),
-
-                      // Upper decorative divider line
-                      Container(
-                        width: 130,
-                        height: 1.2,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Colors.transparent,
-                              const Color(0xFFC5A358).withValues(alpha: 0.7),
-                              Colors.transparent,
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-
-                      // PCB Header
-                      const Text(
-                        'PCB',
-                        style: TextStyle(
-                          fontFamily: 'serif',
-                          fontSize: 44,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 4.5,
-                          color: Colors.white,
-                          height: 1.1,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-
-                      // Lower decorative divider line
-                      Container(
-                        width: 130,
-                        height: 1.2,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Colors.transparent,
-                              const Color(0xFFC5A358).withValues(alpha: 0.7),
-                              Colors.transparent,
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-
-                      // Pakistan Cricket Board subtext
-                      Text(
-                        'Pakistan Cricket Board',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                          letterSpacing: 1.4,
-                          color: Colors.white.withValues(alpha: 0.92),
-                        ),
-                      ),
-                      const SizedBox(height: 48),
-
-                      // "Cricket for Everyone" Motto
-                      RichText(
-                        text: const TextSpan(
-                          children: [
-                            TextSpan(
-                              text: 'Cricket ',
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 0.4,
-                                color: Color(0xFF38E1A0),
-                              ),
-                            ),
-                            TextSpan(
-                              text: 'for Everyone',
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.w500,
-                                letterSpacing: 0.4,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
