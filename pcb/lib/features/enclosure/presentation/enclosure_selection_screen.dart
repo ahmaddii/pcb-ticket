@@ -28,6 +28,10 @@ class _EnclosureSelectionScreenState extends State<EnclosureSelectionScreen> {
   void initState() {
     super.initState();
     _selectedId = widget.booking.enclosureId;
+    if (_selectedId == 'general') _selectedId = 'sohail_tanveer';
+    if (_selectedId == 'vip') _selectedId = 'imran_khan';
+    if (_selectedId == 'premium') _selectedId = 'shoaib_akhter';
+    if (_selectedId == 'first_class') _selectedId = 'miran_buksh';
   }
 
   void _openDetails(String id) {
@@ -39,6 +43,8 @@ class _EnclosureSelectionScreenState extends State<EnclosureSelectionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final selectedOption = EnclosureCatalog.byId(_selectedId);
+
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
       child: Scaffold(
@@ -47,19 +53,35 @@ class _EnclosureSelectionScreenState extends State<EnclosureSelectionScreen> {
           child: Padding(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
                     const DarkBackButton(),
                     const Expanded(
-                      child: Text(
-                        'Select Enclosure',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 17,
-                          fontWeight: FontWeight.w700,
-                        ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'Pindi Cricket Stadium',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 17,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          SizedBox(height: 2),
+                          Text(
+                            'Interactive Stadium Map',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Color(0xFF00C853),
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     Container(
@@ -71,23 +93,23 @@ class _EnclosureSelectionScreenState extends State<EnclosureSelectionScreen> {
                         border: Border.all(color: const Color(0xFF2A3632)),
                       ),
                       child: const Icon(
-                        Icons.near_me_outlined,
-                        color: Colors.white,
-                        size: 18,
+                        Icons.stadium_outlined,
+                        color: Color(0xFF00C853),
+                        size: 20,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
                 Container(
-                  height: 250,
+                  height: 290,
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: const Color(0xFF07160F),
                     borderRadius: BorderRadius.circular(24),
                     border: Border.all(color: const Color(0xFF24332D)),
                   ),
-                  padding: const EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(8),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(16),
                     child: LayoutBuilder(
@@ -97,7 +119,7 @@ class _EnclosureSelectionScreenState extends State<EnclosureSelectionScreen> {
                           maxScale: 3.4,
                           panEnabled: true,
                           scaleEnabled: true,
-                          boundaryMargin: const EdgeInsets.all(80),
+                          boundaryMargin: const EdgeInsets.all(60),
                           child: SizedBox(
                             width: constraints.maxWidth,
                             height: constraints.maxHeight,
@@ -117,15 +139,30 @@ class _EnclosureSelectionScreenState extends State<EnclosureSelectionScreen> {
                     ),
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.only(top: 8, bottom: 8),
-                  child: Text(
-                    'Pinch to zoom  ·  Drag to move around  ·  Tap a stand',
-                    style: TextStyle(
-                      color: Colors.white38,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w500,
-                    ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: selectedOption.color,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          'Selected: ${selectedOption.name} (${selectedOption.gateLabel}) · Tap to view details',
+                          style: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.75),
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 Expanded(
@@ -178,23 +215,27 @@ class _EnclosurePickTile extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(18),
         child: Ink(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           decoration: BoxDecoration(
             color: const Color(0xFF0F1C18),
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
               color: selected ? item.color : const Color(0xFF24332D),
-              width: selected ? 1.6 : 1.1,
+              width: selected ? 1.8 : 1.1,
             ),
           ),
           child: Row(
             children: [
               Container(
-                width: 34,
-                height: 34,
+                width: 38,
+                height: 38,
                 decoration: BoxDecoration(
                   color: item.color.withValues(alpha: 0.18),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: item.color.withValues(alpha: 0.4),
+                    width: 1.0,
+                  ),
                 ),
                 alignment: Alignment.center,
                 child: Container(
@@ -220,13 +261,25 @@ class _EnclosurePickTile extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 3),
-                    Text(
-                      CurrencyFormatter.formatPKR(item.price),
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.5),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
+                    Row(
+                      children: [
+                        Text(
+                          item.gateLabel,
+                          style: const TextStyle(
+                            color: Color(0xFF00C853),
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Text(
+                          '  ·  ${CurrencyFormatter.formatPKR(item.price)}',
+                          style: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.55),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

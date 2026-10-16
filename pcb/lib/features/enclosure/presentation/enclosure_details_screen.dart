@@ -5,7 +5,6 @@ import '../../../core/router/route_names.dart';
 import '../../../core/utils/currency_formatter.dart';
 import '../../../core/widgets/dark_back_button.dart';
 import '../../booking/data/models/booking_flow_args.dart';
-import 'widgets/panorama_viewer.dart';
 
 class EnclosureDetailsScreen extends StatelessWidget {
   final BookingFlowArgs booking;
@@ -14,20 +13,6 @@ class EnclosureDetailsScreen extends StatelessWidget {
     super.key,
     required this.booking,
   });
-
-  void _open360(BuildContext context) {
-    final enclosure = booking.enclosure;
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        fullscreenDialog: true,
-        builder: (_) => Enclosure360Screen(
-          title: enclosure.name,
-          imageAssets: enclosure.panoramaAssets,
-          initialLook: 0.22,
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,10 +48,16 @@ class EnclosureDetailsScreen extends StatelessWidget {
                                   );
                                 },
                               ),
-                              const Positioned(
+                              Positioned(
                                 top: 12,
                                 left: 12,
-                                child: DarkBackButton(),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.black.withValues(alpha: 0.45),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const DarkBackButton(),
+                                ),
                               ),
                             ],
                           ),
@@ -115,7 +106,7 @@ class EnclosureDetailsScreen extends StatelessWidget {
                         spacing: 8,
                         runSpacing: 8,
                         children: [
-                          _Chip(label: 'General Admission', filled: true),
+                          const _Chip(label: 'General Admission', filled: true),
                           _Chip(label: enclosure.standType),
                           _Chip(label: enclosure.seatingType),
                         ],
@@ -137,31 +128,39 @@ class EnclosureDetailsScreen extends StatelessWidget {
                           const SizedBox(width: 10),
                           Expanded(
                             child: _InfoCard(
-                              icon: Icons.directions_walk_rounded,
-                              title: enclosure.distanceFromGate,
-                              subtitle: 'From Main Gate',
+                              icon: Icons.door_front_door_outlined,
+                              title: enclosure.gateLabel,
+                              subtitle: '${enclosure.distanceFromGate} walk',
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 22),
                       const Text(
-                        'View from Enclosure',
+                        'Enclosure Amenities & Facilities',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
-                      const SizedBox(height: 10),
-                      EnclosurePanoramaViewer(
-                        imageAssets: enclosure.panoramaAssets,
-                        height: 220,
-                        enableZoom: true,
-                        showHint: true,
-                        initialLook: 0.16,
-                        onExpand: () => _open360(context),
+                      const SizedBox(height: 12),
+                      _AmenitiesSection(
+                        standType: enclosure.standType,
+                        seatingType: enclosure.seatingType,
+                        distance: enclosure.distanceFromGate,
                       ),
+                      const SizedBox(height: 22),
+                      const Text(
+                        'Matchday Guidelines',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      const _GuidelinesCard(),
                     ],
                   ),
                 ),
@@ -264,6 +263,151 @@ class _InfoCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _AmenitiesSection extends StatelessWidget {
+  final String standType;
+  final String seatingType;
+  final String distance;
+
+  const _AmenitiesSection({
+    required this.standType,
+    required this.seatingType,
+    required this.distance,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final items = [
+      (
+        icon: Icons.stadium_outlined,
+        title: standType,
+        subtitle: 'Direct stadium pitch sightline',
+      ),
+      (
+        icon: Icons.chair_outlined,
+        title: seatingType,
+        subtitle: 'Official numbered stadium seating',
+      ),
+      (
+        icon: Icons.fastfood_outlined,
+        title: 'Food & Refreshments',
+        subtitle: 'Designated concourse food stalls',
+      ),
+      (
+        icon: Icons.local_hospital_outlined,
+        title: 'Medical & First Aid',
+        subtitle: 'First aid post located near gate entry',
+      ),
+    ];
+
+    return Column(
+      children: items.map((item) {
+        return Container(
+          margin: const EdgeInsets.only(bottom: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          decoration: BoxDecoration(
+            color: const Color(0xFF0A1813),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: const Color(0xFF1B2E25)),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF00C853).withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  item.icon,
+                  color: const Color(0xFF00C853),
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item.title,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      item.subtitle,
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.5),
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
+}
+
+class _GuidelinesCard extends StatelessWidget {
+  const _GuidelinesCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final points = [
+      'Original CNIC / Photo ID is mandatory for stadium entry.',
+      'Gates open 2 hours prior to scheduled match toss.',
+      'Show digital QR ticket on your phone at turnstiles.',
+    ];
+
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: const Color(0xFF0F1C18),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFF24332D)),
+      ),
+      child: Column(
+        children: points.map((point) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(top: 4, right: 8),
+                  child: Icon(
+                    Icons.check_circle_outline_rounded,
+                    color: Color(0xFF00C853),
+                    size: 15,
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    point,
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.7),
+                      fontSize: 12,
+                      height: 1.4,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }).toList(),
       ),
     );
   }

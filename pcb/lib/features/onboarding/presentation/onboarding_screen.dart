@@ -22,7 +22,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       imagePath: AppAssets.onboarding1,
     ),
     OnboardingSlideData(
-      title: 'Select Seats &\nExclusive Enclosures\nWith 3D View',
+      title: 'Select Seats &\nExclusive Enclosures\nInteractive Map',
       description:
           'Explore interactive stadium layouts, compare VIP amenities, and secure the best vantage point.',
       imagePath: AppAssets.onboarding2,
