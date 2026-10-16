@@ -18,7 +18,14 @@ class RouteNames {
   static const String ticketDetails = '/ticket-details';
   static const String liveStatus = '/live-status';
   static const String profile = '/profile';
+  static const String settings = '/settings';
+  static const String notifications = '/notifications';
+  static const String language = '/language';
+  static const String helpSupport = '/help-support';
+  static const String paymentMethods = '/payment-methods';
+  static const String bookingHistory = '/booking-history';
   static const String staffLogin = '/staff-login';
   static const String scanner = '/scanner';
+  static const String scanResult = '/scan-result';
   static const String gateDashboard = '/gate-dashboard';
 }

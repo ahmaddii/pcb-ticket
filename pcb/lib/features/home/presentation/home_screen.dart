@@ -122,7 +122,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       _buildCircleButton(
                         icon: Icons.notifications_none,
                         onTap: () {
-                          Navigator.of(context).pushNamed(RouteNames.profile);
+                          Navigator.of(context).pushNamed(
+                            RouteNames.notifications,
+                          );
                         },
                       ),
                       const SizedBox(width: 10),
@@ -220,7 +222,19 @@ class _HomeScreenState extends State<HomeScreen> {
               // 5. Featured Live Match Card
               FeaturedMatchCard(
                 onTap: () {
-                  Navigator.of(context).pushNamed(RouteNames.matchDetails);
+                  Navigator.of(context).pushNamed(
+                    RouteNames.matchDetails,
+                    arguments: {
+                      'team1': 'Pakistan',
+                      'team2': 'New Zealand',
+                      'format': 'ODI',
+                      'venue': 'Rawalpindi Cricket Stadium',
+                      'dateTime': DateTime.now().add(
+                        const Duration(hours: 5, minutes: 20),
+                      ),
+                      'imageAsset': AppAssets.stadiumSplash,
+                    },
+                  );
                 },
               ),
 
@@ -249,7 +263,18 @@ class _HomeScreenState extends State<HomeScreen> {
                 time: 'Today 19:30',
                 venue: 'Gaddafi Stadium, Lahore',
                 onTap: () {
-                  Navigator.of(context).pushNamed(RouteNames.matchDetails);
+                  final now = DateTime.now();
+                  Navigator.of(context).pushNamed(
+                    RouteNames.matchDetails,
+                    arguments: {
+                      'team1': 'Pakistan',
+                      'team2': 'England',
+                      'format': 'T20I',
+                      'venue': 'Gaddafi Stadium, Lahore',
+                      'dateTime': DateTime(now.year, now.month, now.day, 19, 30),
+                      'imageAsset': AppAssets.featuredBanner1,
+                    },
+                  );
                 },
               ),
 
@@ -265,7 +290,23 @@ class _HomeScreenState extends State<HomeScreen> {
                 time: 'Tomorrow 14:00',
                 venue: 'National Stadium, Karachi',
                 onTap: () {
-                  Navigator.of(context).pushNamed(RouteNames.matchDetails);
+                  final tomorrow = DateTime.now().add(const Duration(days: 1));
+                  Navigator.of(context).pushNamed(
+                    RouteNames.matchDetails,
+                    arguments: {
+                      'team1': 'Pakistan',
+                      'team2': 'Sri Lanka',
+                      'format': 'ODI',
+                      'venue': 'National Stadium, Karachi',
+                      'dateTime': DateTime(
+                        tomorrow.year,
+                        tomorrow.month,
+                        tomorrow.day,
+                        14,
+                      ),
+                      'imageAsset': AppAssets.featuredBanner2,
+                    },
+                  );
                 },
               ),
 
@@ -281,7 +322,27 @@ class _HomeScreenState extends State<HomeScreen> {
                 time: 'Fri 15:00',
                 venue: 'Rawalpindi Cricket Stadium',
                 onTap: () {
-                  Navigator.of(context).pushNamed(RouteNames.matchDetails);
+                  final now = DateTime.now();
+                  final daysUntilFriday = (DateTime.friday - now.weekday) % 7;
+                  final friday = now.add(
+                    Duration(days: daysUntilFriday == 0 ? 7 : daysUntilFriday),
+                  );
+                  Navigator.of(context).pushNamed(
+                    RouteNames.matchDetails,
+                    arguments: {
+                      'team1': 'England',
+                      'team2': 'Sri Lanka',
+                      'format': 'Test',
+                      'venue': 'Rawalpindi Cricket Stadium',
+                      'dateTime': DateTime(
+                        friday.year,
+                        friday.month,
+                        friday.day,
+                        15,
+                      ),
+                      'imageAsset': AppAssets.onboarding1,
+                    },
+                  );
                 },
               ),
 

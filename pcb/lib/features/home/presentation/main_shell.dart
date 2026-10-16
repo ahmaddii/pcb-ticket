@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_assets.dart';
-import '../../matches/presentation/matches_screen.dart';
+import '../../live_status/presentation/live_status_screen.dart';
 import '../../profile/presentation/profile_screen.dart';
 import '../../tickets/presentation/my_tickets_screen.dart';
 import 'home_screen.dart';
@@ -19,7 +19,7 @@ class _MainShellState extends State<MainShell> {
 
   final List<Widget> _pages = const [
     HomeScreen(),
-    MatchesScreen(),
+    LiveStatusScreen(),
     MyTicketsScreen(),
     ProfileScreen(),
   ];
@@ -104,7 +104,7 @@ class _MainShellState extends State<MainShell> {
                     _buildDockItem(
                       index: 1,
                       assetIcon: AppAssets.iconCricketGround,
-                      tooltip: 'Matches',
+                      tooltip: 'Live status',
                     ),
                     _buildDockItem(
                       index: 2,

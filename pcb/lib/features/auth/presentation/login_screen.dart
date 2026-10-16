@@ -337,6 +337,24 @@ class _LoginScreenState extends State<LoginScreen> {
 
                         const SizedBox(height: 20),
 
+                        Center(
+                          child: TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pushNamed(
+                                RouteNames.staffLogin,
+                              );
+                            },
+                            child: const Text(
+                              'Gate staff / Admin sign in',
+                              style: TextStyle(
+                                color: Color(0xFF00C853),
+                                fontWeight: FontWeight.w700,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                        ),
+
                         // Disclaimer
                         Center(
                           child: Text(
